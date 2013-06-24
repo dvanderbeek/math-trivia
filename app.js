@@ -23,7 +23,8 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
-app.get('/', routes.index);
+app.get('/', routes.index)
+app.get('/trivia', routes.trivia);
 app.get('/about', routes.about);
 
 var io = require('socket.io').listen(app.listen(app.get('port')));

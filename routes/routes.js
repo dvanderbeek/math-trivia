@@ -1,5 +1,9 @@
 exports.index = function(req, res){
-  res.render('index', { title: 'Belly Math Trivia', a: 2, b: 2, operator: "+"  });
+  res.render('index', { title: 'Belly Math Trivia' });
+};
+
+exports.trivia = function(req, res){
+  res.render('trivia', { title: 'Belly Math Trivia', a: 2, b: 2, operator: "+" });
 };
 
 exports.about = function(req, res){

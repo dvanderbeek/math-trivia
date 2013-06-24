@@ -1,6 +1,6 @@
 window.onload = function() {
   answers = [];
-  socket = io.connect(document.URL);
+  socket = io.connect(window.location.hostname);
   current_answer = 4;
 
   socket.on('answer', function (data) {
