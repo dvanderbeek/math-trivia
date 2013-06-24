@@ -2,10 +2,13 @@ extends layout
 
 block content
   .container
-    h2 Home
-    form(action="/trivia", method="post")
-      p
-        label What's your name?
-        input(type='text',placeholder='Your Name', name='name')
-      p
-        input.btn(type='submit', value='Play!')
+    .row-fluid
+      .span6
+        img#flop(src='/images/flop.png')
+      .span6#welcome
+        h2(style="margin-top: 80px;") Hi there, I'm Flop.
+        form(action="/trivia", method="post")
+          h4(style="margin-bottom: 20px;") Welcome to Belly Math Trivia!  After you tell us your name, we'll let you into the game.  If you're the first person to correctly answer a question, you get points!
+          input(type='text',placeholder='Your Name', name='name')
+          br
+          input.btn(type='submit', value='Play!')

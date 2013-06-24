@@ -30,6 +30,7 @@ window.onload = function() {
     question.push(data);
     current_answer = question[0].answer;
     html = 'What is ' + question[0].a + " " + question[0].operator + " " + question[0].b + "?";
+    $("#win").delay(2000).fadeOut('slow');
     $("#question").html(html);
   });
 
@@ -40,6 +41,7 @@ window.onload = function() {
       text = $("#answer").val();
       if (text == current_answer) {
         correct = true
+        $("#win").show();
         points = parseInt($("#points").html()) + 2; // TODO: store points in JS or DB, not just as value in HTML.  Figure out how to show list of all users/points
         $("#points").html(points);
         socket.emit('send_question', { a: 35, b: 30, answer: 5, operator: "-", winner: $("#name").val() }); // TODO: generate a, b, operator, and answer
