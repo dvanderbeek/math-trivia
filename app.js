@@ -1,4 +1,3 @@
-
 // Module dependencies.
 var express = require('express')
   , routes = require('./routes/routes')
@@ -24,8 +23,7 @@ if ('development' == app.get('env')) {
 }
 
 app.get('/', routes.index)
-app.get('/trivia', routes.trivia);
-app.get('/about', routes.about);
+app.post('/trivia', routes.trivia);
 
 var io = require('socket.io').listen(app.listen(app.get('port')));
 console.log("Listening on port " + app.get('port'));

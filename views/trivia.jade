@@ -2,7 +2,7 @@ extends layout
 
 block score
   .pull-right#score
-    | You have 
+    | Welcome, #{name}! You have 
     span#points 0
     |  points!
 
@@ -12,9 +12,8 @@ block content
       .span6
         #content
         .row-fluid
-          .span4
-            input.span12#name(placeholder='Name')
-          .span4
+          .span8
+            input#name(placeholder='Name', value='#{name}', type='hidden')
             input.span12#answer(placeholder='Answer')
           .span4
             input.span12#send.btn.btn-warning.pull-right(type='button', value='Submit Answer')
@@ -26,3 +25,6 @@ block content
     .container
       h2 Instructions
       p The game is simple.  Flop the Belly Dog will ask questions on the right.  Be the first to answer correctly and win points!
+    ul
+      each user in users
+        li #{user.name}
