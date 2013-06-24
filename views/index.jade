@@ -2,7 +2,7 @@ extends layout
 
 block content
   .container
-    h2 Home
+    h2 Home #{env}
     form(action="/trivia", method="post")
       p
         label What's your name?

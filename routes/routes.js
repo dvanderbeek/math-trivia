@@ -17,7 +17,7 @@ client.auth(pass, function (err) {
 });
 
 exports.index = function(req, res){
-  res.render('index', { title: 'Belly Math Trivia' });
+  res.render('index', { title: 'Belly Math Trivia', env: process.env.NODE_ENV });
 };
 
 exports.trivia = function(req, res){
