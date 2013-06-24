@@ -1,0 +1,22 @@
+extends layout
+
+block content
+  .container
+    .row-fluid
+      .span6
+        #content
+        .row-fluid
+          .span4
+            input.span12#name(placeholder='Name')
+          .span4
+            input.span12#answer(placeholder='Answer')
+          .span4
+            input.span12#send.btn.btn-warning.pull-right(type='button', value='Submit Answer')
+      .span3
+        img#flop(src='/images/flop.png')
+      .span3
+        h4#question What is #{a} #{operator} #{b}?
+  .dark#instructions
+    .container
+      h2 Instructions
+      p The game is simple.  Flop the Belly Dog will ask questions on the right.  Be the first to answer correctly and win points!
