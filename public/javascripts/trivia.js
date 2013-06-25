@@ -19,9 +19,7 @@ window.onload = function() {
   });
 
   socket.on('winner', function (data) {
-    //TODO: Should store points on server-side and pass them into this function...
-    points = parseInt($("#points").html());
-    points += data.points;
+    points = data.points;
     $("#points").html(points);
     $("#win").show();
   });
@@ -75,6 +73,7 @@ window.onload = function() {
     $("#operator").html(" " + msg.operator + " ");
     // Set up username and score
     $(".username").html(msg.userName);
+    $("#points").html(msg.points);
     $("#score").show();
     // Hide the login screen
     $("#login").hide();

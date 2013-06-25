@@ -32,6 +32,7 @@ var io = socketio.listen(server);
 
 var clients = {};
 var socketsOfClients = {};
+var points = {};
 var a = getRandomInt(-100, 100)
   , b = getRandomInt(-100, 100)
   , operator = getOperator()
@@ -43,8 +44,9 @@ io.sockets.on('connection', function (socket) {
 
   socket.on('send_answer', function (data) {
     if (data.answer == answer) {
+      points[data.username] += data.points;
       io.sockets.emit('correct_answer', data);
-      io.sockets.sockets[socket.id].emit('winner', data);
+      io.sockets.sockets[socket.id].emit('winner', { points: points[data.username] });
     } else {
       io.sockets.emit('incorrect_answer', data);
     }
@@ -62,6 +64,7 @@ io.sockets.on('connection', function (socket) {
     // Is this an existing user name?
     if (clients[userName] === undefined) {;
       clients[userName] = socket.id;
+      points[userName] = 0;
       socketsOfClients[socket.id] = userName;
       userNameAvailable(socket.id, userName);
       userJoined(userName, socket.id);
@@ -117,7 +120,7 @@ function userNameAvailable(sId, uName) {
   setTimeout(function() {
     console.log('Sending welcome msg to ' + uName + ' at ' + sId);
     // Welcome the new user
-    io.sockets.sockets[sId].emit('welcome', { "userName" : uName, "currentUsers": JSON.stringify(Object.keys(clients)), "a" : a, "b" : b, "operator" : operator, "answer" : answer });
+    io.sockets.sockets[sId].emit('welcome', { "userName" : uName, "currentUsers": JSON.stringify(Object.keys(clients)), "a" : a, "b" : b, "operator" : operator, "answer" : answer, "points" : points[uName] });
   }, 500);
 }
  
