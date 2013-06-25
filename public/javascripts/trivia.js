@@ -19,6 +19,9 @@ window.onload = function() {
   });
 
   socket.on('winner', function (data) {
+    points = parseInt($("#points").html());
+    points += 2;
+    $("#points").html(points);
     $("#win").show();
   });
 
