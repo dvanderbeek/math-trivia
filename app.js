@@ -40,7 +40,7 @@ var a = getRandomInt(-100, 100)
 
 io.sockets.on('connection', function (socket) {
 
-  socket.emit('incorrect_answer', { answer: 'Welcome to Belly Math Trivia! Get ready to answer the nest question.', username: 'Flop' });
+  socket.emit('incorrect_answer', { answer: 'Welcome to Belly Math Trivia! Be the first to answer each question correctly to win points.', username: 'Flop' });
 
   socket.on('send_answer', function (data) {
     if (data.answer == answer) {
