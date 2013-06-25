@@ -36,7 +36,7 @@ window.onload = function() {
   });
 
   socket.on('question', function (data) {
-    $("#answerDebug").html(data.answer);
+    // $("#answerDebug").html(data.answer);
     html = 'What is ' + data.a + " " + data.operator + " " + data.b + "?";
     $("#win").delay(2000).fadeOut('slow');
     $("#question").html(html);
@@ -70,7 +70,7 @@ window.onload = function() {
     $("#a").html(msg.a);
     $("#b").html(msg.b);
     $("#operator").html(" " + msg.operator + " ");
-    $("#answerDebug").html(msg.answer);
+    // $("#answerDebug").html(msg.answer);
     // Set up username and score
     $(".username").html(msg.userName);
     $("#score").show();
