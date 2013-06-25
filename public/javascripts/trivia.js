@@ -26,10 +26,9 @@ window.onload = function() {
   });
 
   socket.on('question', function (data) {
-    question = [];
-    question.push(data);
-    current_answer = question[0].answer;
-    html = 'What is ' + question[0].a + " " + question[0].operator + " " + question[0].b + "?";
+    current_answer = data.answer;
+    $("#answerDebug").html(current_answer);
+    html = 'What is ' + data.a + " " + data.operator + " " + data.b + "?";
     $("#win").delay(2000).fadeOut('slow');
     $("#question").html(html);
   });
@@ -42,33 +41,31 @@ window.onload = function() {
 
   function appendNewUser(uName, notify) {
     $('#users').append('<p>'+uName+'</p>');
-    $(".username").val(uName);
   }
 
   function setCurrentUsers(usersStr) {
     $('#users').html("");
     JSON.parse(usersStr).forEach(function(name) {
-        appendNewUser(name, false);
+      appendNewUser(name, false);
     });
   }
 
   function sendAnswer() {
-    if( $("#name").val() == "" ) {
-      alert("Please type your name!");
+    text = $("#answer").val();
+
+    // TODO: Check the answers server-side
+    if (text == current_answer) {
+      correct = true
+      $("#win").show();
+      // TODO: Store points server-side
+      points = parseInt($("#points").html()) + 2; 
+      $("#points").html(points);
+      socket.emit('send_question' ); 
     } else {
-      text = $("#answer").val();
-      if (text == current_answer) {
-        correct = true
-        $("#win").show();
-        points = parseInt($("#points").html()) + 2; // TODO: store points in server-side js, not just as value in HTML.  Maybe show list of all users/points
-        $("#points").html(points);
-        socket.emit('send_question', { a: 35, b: 30, answer: 5, operator: "-", winner: $("#name").val() }); // TODO: generate a, b, operator, and answer
-      } else {
-        correct = false
-      }
-      socket.emit('send_answer', { answer: text, username: $("#name").val(), correct: correct, points: 2 }); // For now, each question is worth 2 points
-      $("#answer").val("");
+      correct = false
     }
+    socket.emit('send_answer', { answer: text, username: $(".username").html(), correct: correct, points: 2 }); // For now, each question is worth 2 points
+    $("#answer").val("");
   }
 
   function showGame(msg) {
@@ -87,10 +84,12 @@ window.onload = function() {
 
   $(document).ready(function() {
     socket.on('userJoined', function(msg) {
+      setCurrentUsers(msg.currentUsers);
       $("#game #flash").html(msg.userName + " just joined the game!").show().delay(3000).fadeOut();
     });
 
     socket.on('userLeft', function(msg) {
+      setCurrentUsers(msg.currentUsers);
       $("#game #flash").html(msg.userName + " just left the game.").show().delay(3000).fadeOut();
     });
 
@@ -102,6 +101,8 @@ window.onload = function() {
       setCurrentUsers(msg.currentUsers);
       showGame(msg);
     });
+    
+    $("#answerDebug").html(current_answer);
 
     $("#username").keyup(function(e) {
       if(e.keyCode == 13) {

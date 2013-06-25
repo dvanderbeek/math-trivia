@@ -32,7 +32,7 @@ var io = socketio.listen(server);
 
 var clients = {};
 var socketsOfClients = {};
-// Default question
+// Starting question
 var a = 2
   , b = 2
   , operator = "+"
@@ -47,11 +47,11 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('send_question', function (data) {
-    a = data.a;
-    b = data.b;
-    operator = data.operator;
-    answer = data.answer;
-    io.sockets.emit('question', data);
+    new_a = getRandomInt(-100, 100);
+    new_b = getRandomInt(-100, 100);
+    new_operator = getOperator();
+    new_answer = getAnswer(new_a, new_b, new_operator);
+    io.sockets.emit('question', { a: new_a, b: new_b, answer: new_answer, operator: new_operator });
   });
 
   socket.on('set username', function(userName) {
@@ -77,24 +77,43 @@ io.sockets.on('connection', function (socket) {
   });
 });
 
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+function getOperator() {
+  operators = Array("+", "-", "*");
+  return operators[Math.floor(Math.random()*operators.length)];
+}
+
+function getAnswer(new_a, new_b, new_operator) {
+  if (new_operator == "+") {
+    return new_a + new_b;
+  } else if (new_operator == "-") {
+    return new_a - new_b;
+  } else {
+    return new_a * new_b;
+  }
+}
+
 function userJoined(uName, new_sId) {
   // Let all other users know someone has joined.
   Object.keys(socketsOfClients).forEach(function(sId) {
     if (sId != new_sId) {
-      io.sockets.sockets[sId].emit('userJoined', { "userName": uName });
+      io.sockets.sockets[sId].emit('userJoined', { "userName": uName, "currentUsers": JSON.stringify(Object.keys(clients)) });
     }
   });
 }
  
 function userLeft(uName) {
-  io.sockets.emit('userLeft', { "userName": uName });
+  io.sockets.emit('userLeft', { "userName": uName, "currentUsers": JSON.stringify(Object.keys(clients)) });
 }
  
 function userNameAvailable(sId, uName) {
   setTimeout(function() {
     console.log('Sending welcome msg to ' + uName + ' at ' + sId);
     // Welcome the new user
-    io.sockets.sockets[sId].emit('welcome', { "userName" : uName, "currentUsers": JSON.stringify(Object.keys(clients)), "a" : a, "b" : b, "operator" : operator });
+    io.sockets.sockets[sId].emit('welcome', { "userName" : uName, "currentUsers": JSON.stringify(Object.keys(clients)), "a" : a, "b" : b, "operator" : operator, "answer" : answer });
   }, 500);
 }
  
