@@ -32,26 +32,31 @@ var io = socketio.listen(server);
 
 var clients = {};
 var socketsOfClients = {};
-// Starting question
-var a = 2
-  , b = 2
-  , operator = "+"
-  , answer = 4;
+// Starting question.  TODO: Generate this randomly and emit question like normal
+var a = getRandomInt(-100, 100)
+  , b = getRandomInt(-100, 100)
+  , operator = getOperator()
+  , answer = getAnswer(a, b, operator);
 
 io.sockets.on('connection', function (socket) {
 
-  socket.emit('answer', { answer: 'Welcome to Belly Math Trivia! Get ready to answer the nest question.', username: 'Flop' });
+  socket.emit('incorrect_answer', { answer: 'Welcome to Belly Math Trivia! Get ready to answer the nest question.', username: 'Flop' });
 
   socket.on('send_answer', function (data) {
-    io.sockets.emit('answer', data);
+    if (data.answer == answer) {
+      io.sockets.emit('correct_answer', data);
+      io.sockets.sockets[socket.id].emit('winner');
+    } else {
+      io.sockets.emit('incorrect_answer', data);
+    }
   });
 
   socket.on('send_question', function (data) {
-    new_a = getRandomInt(-100, 100);
-    new_b = getRandomInt(-100, 100);
-    new_operator = getOperator();
-    new_answer = getAnswer(new_a, new_b, new_operator);
-    io.sockets.emit('question', { a: new_a, b: new_b, answer: new_answer, operator: new_operator });
+    a = getRandomInt(-100, 100);
+    b = getRandomInt(-100, 100);
+    operator = getOperator();
+    answer = getAnswer(a, b, operator);
+    io.sockets.emit('question', { a: a, b: b, answer: answer, operator: operator });
   });
 
   socket.on('set username', function(userName) {
@@ -86,13 +91,13 @@ function getOperator() {
   return operators[Math.floor(Math.random()*operators.length)];
 }
 
-function getAnswer(new_a, new_b, new_operator) {
-  if (new_operator == "+") {
-    return new_a + new_b;
-  } else if (new_operator == "-") {
-    return new_a - new_b;
+function getAnswer(a, b, operator) {
+  if (operator == "+") {
+    return a + b;
+  } else if (operator == "-") {
+    return a - b;
   } else {
-    return new_a * new_b;
+    return a * b;
   }
 }
 
@@ -104,7 +109,7 @@ function userJoined(uName, new_sId) {
     }
   });
 }
- 
+
 function userLeft(uName) {
   io.sockets.emit('userLeft', { "userName": uName, "currentUsers": JSON.stringify(Object.keys(clients)) });
 }

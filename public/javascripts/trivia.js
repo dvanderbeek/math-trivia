@@ -1,24 +1,34 @@
 window.onload = function() {
-  answers = [];
   socket = io.connect(window.location.hostname);
-  current_answer = 4;
 
-  socket.on('answer', function (data) {
+  socket.on('correct_answer', function (data) {
     if(data.answer) {
-      answers.push(data);
       html = '';
-      for(i=0; i<answers.length; i++) {
-        if(answers[i].correct == true) {
-          html += "<span class='winner'>";
-        }
-        html += '<b>' + answers[i].username + ': </b>';
-        html += answers[i].answer;
-        if(answers[i].correct == true) {
-          html += "<span class='pull-right'>" + answers[i].points + " POINTS!</span></span>";
-        }
-        html += '<br />';
-      }
-      $("#content").html(html);
+      html += "<span class='winner'>";
+      html += '<b>' + data.username + ': </b>';
+      html += data.answer;
+      html += "<span class='pull-right'>" + data.points + " POINTS!</span></span>";
+      html += '<br />';
+      $("#content").append(html);
+      $("#content").scrollTop($("#content")[0].scrollHeight);
+      socket.emit('send_question');
+      
+    } else {
+      console.log("There is a problem:", data);
+    }
+  });
+
+  socket.on('winner', function (data) {
+    $("#win").show();
+  });
+
+  socket.on('incorrect_answer', function (data) {
+    if(data.answer) {
+      html = '';
+      html += '<b>' + data.username + ': </b>';
+      html += data.answer;
+      html += '<br />';
+      $("#content").append(html);
       $("#content").scrollTop($("#content")[0].scrollHeight);
     } else {
       console.log("There is a problem:", data);
@@ -26,8 +36,7 @@ window.onload = function() {
   });
 
   socket.on('question', function (data) {
-    current_answer = data.answer;
-    $("#answerDebug").html(current_answer);
+    $("#answerDebug").html(data.answer);
     html = 'What is ' + data.a + " " + data.operator + " " + data.b + "?";
     $("#win").delay(2000).fadeOut('slow');
     $("#question").html(html);
@@ -51,20 +60,8 @@ window.onload = function() {
   }
 
   function sendAnswer() {
-    text = $("#answer").val();
-
-    // TODO: Check the answers server-side
-    if (text == current_answer) {
-      correct = true
-      $("#win").show();
-      // TODO: Store points server-side
-      points = parseInt($("#points").html()) + 2; 
-      $("#points").html(points);
-      socket.emit('send_question' ); 
-    } else {
-      correct = false
-    }
-    socket.emit('send_answer', { answer: text, username: $(".username").html(), correct: correct, points: 2 }); // For now, each question is worth 2 points
+    answer = $("#answer").val();
+    socket.emit('send_answer', { answer: answer, username: $(".username").html(), points: 2 }); // For now, each question is worth 2 points
     $("#answer").val("");
   }
 
@@ -73,6 +70,7 @@ window.onload = function() {
     $("#a").html(msg.a);
     $("#b").html(msg.b);
     $("#operator").html(" " + msg.operator + " ");
+    $("#answerDebug").html(msg.answer);
     // Set up username and score
     $(".username").html(msg.userName);
     $("#score").show();
@@ -101,8 +99,6 @@ window.onload = function() {
       setCurrentUsers(msg.currentUsers);
       showGame(msg);
     });
-    
-    $("#answerDebug").html(current_answer);
 
     $("#username").keyup(function(e) {
       if(e.keyCode == 13) {

@@ -1,6 +1,6 @@
 {
   "name": "BellyMath",
-  "version": "0.0.1-21",
+  "version": "0.0.1-22",
   "author": "David Van Der Beek",
   "subdomain": "math-trivia",
   "private": true,
