@@ -32,7 +32,6 @@ var io = socketio.listen(server);
 
 var clients = {};
 var socketsOfClients = {};
-// Starting question.  TODO: Generate this randomly and emit question like normal
 var a = getRandomInt(-100, 100)
   , b = getRandomInt(-100, 100)
   , operator = getOperator()
@@ -45,7 +44,7 @@ io.sockets.on('connection', function (socket) {
   socket.on('send_answer', function (data) {
     if (data.answer == answer) {
       io.sockets.emit('correct_answer', data);
-      io.sockets.sockets[socket.id].emit('winner');
+      io.sockets.sockets[socket.id].emit('winner', data);
     } else {
       io.sockets.emit('incorrect_answer', data);
     }

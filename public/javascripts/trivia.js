@@ -19,8 +19,9 @@ window.onload = function() {
   });
 
   socket.on('winner', function (data) {
+    //TODO: Should store points on server-side and pass them into this function...
     points = parseInt($("#points").html());
-    points += 2;
+    points += data.points;
     $("#points").html(points);
     $("#win").show();
   });
@@ -39,7 +40,6 @@ window.onload = function() {
   });
 
   socket.on('question', function (data) {
-    // $("#answerDebug").html(data.answer);
     html = 'What is ' + data.a + " " + data.operator + " " + data.b + "?";
     $("#win").delay(2000).fadeOut('slow');
     $("#question").html(html);
@@ -73,7 +73,6 @@ window.onload = function() {
     $("#a").html(msg.a);
     $("#b").html(msg.b);
     $("#operator").html(" " + msg.operator + " ");
-    // $("#answerDebug").html(msg.answer);
     // Set up username and score
     $(".username").html(msg.userName);
     $("#score").show();
