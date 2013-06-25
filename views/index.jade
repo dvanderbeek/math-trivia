@@ -1,14 +1,49 @@
 extends layout
 
+block score
+  .pull-right
+    #win.pull-left You win. +2 Points!!
+    #score.pull-right
+      | Welcome, 
+      span.username
+      | ! You have 
+      span#points 0
+      |  points!
+
 block content
-  .container
-    .row-fluid
-      .span6
-        img#flop(src='/images/flop.png')
-      .span6#welcome
-        h2(style="margin-top: 80px;") Hi there, I'm Flop.
-        form(action="/trivia", method="post")
-          h4(style="margin-bottom: 20px;") Welcome to Belly Math Trivia!  After you tell us your name, we'll let you into the game.  If you're the first person to correctly answer a question, you get points!
-          input(type='text',placeholder='Your Name', name='name')
-          br
-          input.btn(type='submit', value='Play!')
+  #login
+    .container
+      .row-fluid
+        #flash.span8.offset2.alert.alert-info LOGIN FLASH MESSAGE
+      .row-fluid
+        .span3.offset2
+          img#flop(src='/images/flop.png')
+        .span4
+          .well(style='margin-top: 58px;')
+            h2(style='margin-top: 0px;') Hi there!
+            p I'm Flop, and during this game I will be asking you some math questions.  You'll get points if you are the first to answer correctly!
+            label(for="username") Please choose a username to get started. 
+            input#username(placeholder='Username')
+            input#setUsername.btn.btn-warning.pull-right(type='button', value='Go!')
+  #game
+    .container
+      .row-fluid
+        #flash.span8.offset2.alert.alert-info GAME FLASH MESSAGE
+      .row-fluid
+        .span3
+          img#flop(src='/images/flop.png')
+        .span3
+          h4#question 
+            | What is 
+            span#a 
+            span#operator
+            span#b
+            | ?
+        .span6
+          #content
+          .row-fluid
+            .span8
+              input#name(placeholder='Name', value='#{name}', type='hidden')
+              input.span12#answer(placeholder='Answer')
+            .span4
+              input.span12#sendAnswer.btn.btn-warning.pull-right(type='button', value='Submit Answer')

@@ -34,6 +34,24 @@ window.onload = function() {
     $("#question").html(html);
   });
 
+  function setUsername() {
+    myUserName = $('#username').val();
+    socket.emit('set username', $('#username').val(), function(data) { console.log('emit set username', data); });
+    console.log('Set user name as ' + $('input#username').val());
+  }
+
+  function appendNewUser(uName, notify) {
+    $('#users').append('<p>'+uName+'</p>');
+    $(".username").val(uName);
+  }
+
+  function setCurrentUsers(usersStr) {
+    $('#users').html("");
+    JSON.parse(usersStr).forEach(function(name) {
+        appendNewUser(name, false);
+    });
+  }
+
   function sendAnswer() {
     if( $("#name").val() == "" ) {
       alert("Please type your name!");
@@ -42,7 +60,7 @@ window.onload = function() {
       if (text == current_answer) {
         correct = true
         $("#win").show();
-        points = parseInt($("#points").html()) + 2; // TODO: store points in JS or DB, not just as value in HTML.  Figure out how to show list of all users/points
+        points = parseInt($("#points").html()) + 2; // TODO: store points in server-side js, not just as value in HTML.  Maybe show list of all users/points
         $("#points").html(points);
         socket.emit('send_question', { a: 35, b: 30, answer: 5, operator: "-", winner: $("#name").val() }); // TODO: generate a, b, operator, and answer
       } else {
@@ -53,14 +71,55 @@ window.onload = function() {
     }
   }
 
+  function showGame(msg) {
+    // Set up the current question
+    $("#a").html(msg.a);
+    $("#b").html(msg.b);
+    $("#operator").html(" " + msg.operator + " ");
+    // Set up username and score
+    $(".username").html(msg.userName);
+    $("#score").show();
+    // Hide the login screen
+    $("#login").hide();
+    // Show the game screen
+    $("#game").show();
+  }
+
   $(document).ready(function() {
+    socket.on('userJoined', function(msg) {
+      $("#game #flash").html(msg.userName + " just joined the game!").show().delay(3000).fadeOut();
+    });
+
+    socket.on('userLeft', function(msg) {
+      $("#game #flash").html(msg.userName + " just left the game.").show().delay(3000).fadeOut();
+    });
+
+    socket.on('error', function(data) {
+      $("#login #flash").html("Sorry, that username is already being used.  Please try a different one.").show().delay(3000).fadeOut();
+    });
+
+    socket.on('welcome', function(msg) {
+      setCurrentUsers(msg.currentUsers);
+      showGame(msg);
+    });
+
+    $("#username").keyup(function(e) {
+      if(e.keyCode == 13) {
+        setUsername();
+      }
+    });
+
+    $("#setUsername").click(function() {
+      setUsername();
+    });
+
     $("#answer").keyup(function(e) {
       if(e.keyCode == 13) {
         sendAnswer();
       }
     });
 
-    $("#send").click(function() {
+    $("#sendAnswer").click(function() {
       sendAnswer();
     });
   });

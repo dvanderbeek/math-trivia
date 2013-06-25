@@ -9,12 +9,26 @@ h1, h2, h3, h4, h5, h6 {
 	font-family: 'Open Sans', sans-serif;
 }
 
-.header h1 {
+.header {
 	background: #0C7FB8;
-	display: inline-block;
-	padding: 15px 30px;
-	margin: 0;
-	color: #FFFFFF;
+	h1 {
+		display: inline-block;
+		padding: 15px 0;
+		margin: 0;
+		color: #FFFFFF;
+		text-shadow: 1px 1px 3px #333;
+	}
+}
+
+#game { display: none; }
+/*#login { display: none; }*/
+#score { display: none; }
+#login { margin-top: 8%; }
+#game { margin-top: 5%; }
+#username { margin-top: 3px; }
+#game #flash, #login #flash { 
+	display: none; 
+	text-align: center;
 }
 
 #content {
@@ -31,21 +45,6 @@ h1, h2, h3, h4, h5, h6 {
 
 #name, #answer {
 	margin-bottom: 10px;
-}
-
-.dark {
-	background: #333333;
-	color: #828689;
-}
-
-#instructions {
-	margin-top: 30px;
-	padding: 50px 0;
-}
-
-#welcome { 
-	color: #ffffff; 
-	text-shadow: 1px 1px 3px #333;
 }
 
 #flop {

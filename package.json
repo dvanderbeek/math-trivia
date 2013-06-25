@@ -1,6 +1,6 @@
 {
   "name": "BellyMath",
-  "version": "0.0.1-19",
+  "version": "0.0.1-20",
   "author": "David Van Der Beek",
   "subdomain": "math-trivia",
   "private": true,
@@ -9,11 +9,8 @@
   },
   "dependencies": {
     "express": "3.2.6",
-    "wizard": "0.0.0",
     "socket.io": "latest",
-    "jade": "latest",
-    "nconf": "latest",
-    "redis": "latest"
+    "jade": "latest"
   },
   "engines": {
     "node": "0.8.x"

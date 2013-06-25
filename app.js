@@ -1,6 +1,7 @@
 // Module dependencies.
 var express = require('express')
   , routes = require('./routes/routes')
+  , socketio = require('socket.io')
   , http = require('http')
   , path = require('path');
 
@@ -23,17 +24,82 @@ if ('development' == app.get('env')) {
 }
 
 app.get('/', routes.index)
-app.post('/trivia', routes.trivia);
 
-var io = require('socket.io').listen(app.listen(app.get('port')));
-console.log("Listening on port " + app.get('port'));
+var server = app.listen(app.get('port'), function(){
+  console.log("Express server listening on port " + app.get('port'));
+});
+var io = socketio.listen(server);
+
+var clients = {};
+var socketsOfClients = {};
+// Default question
+var a = 2
+  , b = 2
+  , operator = "+"
+  , answer = 4;
 
 io.sockets.on('connection', function (socket) {
-  socket.emit('answer', { answer: 'Welcome to Belly Math Trivia! Enter your name below and get ready to answer the nest question.', username: 'Flop' });
+
+  socket.emit('answer', { answer: 'Welcome to Belly Math Trivia! Get ready to answer the nest question.', username: 'Flop' });
+
   socket.on('send_answer', function (data) {
     io.sockets.emit('answer', data);
   });
+
   socket.on('send_question', function (data) {
+    a = data.a;
+    b = data.b;
+    operator = data.operator;
+    answer = data.answer;
     io.sockets.emit('question', data);
   });
+
+  socket.on('set username', function(userName) {
+    // Is this an existing user name?
+    if (clients[userName] === undefined) {;
+      clients[userName] = socket.id;
+      socketsOfClients[socket.id] = userName;
+      userNameAvailable(socket.id, userName);
+      userJoined(userName, socket.id);
+    } else
+    if (clients[userName] === socket.id) {
+      // Ignore for now
+    } else {
+      userNameAlreadyInUse(socket.id, userName);
+    }
+  });
+
+  socket.on('disconnect', function() {
+    var uName = socketsOfClients[socket.id];
+    delete socketsOfClients[socket.id];
+    delete clients[uName];
+    userLeft(uName);
+  });
 });
+
+function userJoined(uName, new_sId) {
+  // Let all other users know someone has joined.
+  Object.keys(socketsOfClients).forEach(function(sId) {
+    if (sId != new_sId) {
+      io.sockets.sockets[sId].emit('userJoined', { "userName": uName });
+    }
+  });
+}
+ 
+function userLeft(uName) {
+  io.sockets.emit('userLeft', { "userName": uName });
+}
+ 
+function userNameAvailable(sId, uName) {
+  setTimeout(function() {
+    console.log('Sending welcome msg to ' + uName + ' at ' + sId);
+    // Welcome the new user
+    io.sockets.sockets[sId].emit('welcome', { "userName" : uName, "currentUsers": JSON.stringify(Object.keys(clients)), "a" : a, "b" : b, "operator" : operator });
+  }, 500);
+}
+ 
+function userNameAlreadyInUse(sId, uName) {
+  setTimeout(function() {
+    io.sockets.sockets[sId].emit('error', { "userNameInUse" : true });
+  }, 500);
+}
