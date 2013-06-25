@@ -24,6 +24,10 @@ window.onload = function() {
     $("#win").show();
   });
 
+  socket.on('wrong', function (data) {
+    $("#wrong").show().delay(2000).fadeOut();
+  });
+
   socket.on('incorrect_answer', function (data) {
     if(data.answer) {
       html = '';

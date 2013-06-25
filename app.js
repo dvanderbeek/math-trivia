@@ -48,6 +48,9 @@ io.sockets.on('connection', function (socket) {
       io.sockets.emit('correct_answer', data);
       io.sockets.sockets[socket.id].emit('winner', { points: points[data.username] });
     } else {
+      if (is_int(data.answer)) {
+        io.sockets.sockets[socket.id].emit('wrong');
+      }
       io.sockets.emit('incorrect_answer', data);
     }
   });
@@ -91,6 +94,14 @@ function getRandomInt(min, max) {
 function getOperator() {
   operators = Array("+", "-", "*");
   return operators[Math.floor(Math.random()*operators.length)];
+}
+
+function is_int(value){ 
+  if((parseFloat(value) == parseInt(value)) && !isNaN(value)){
+      return true;
+  } else { 
+      return false;
+  } 
 }
 
 function getAnswer(a, b, operator) {
